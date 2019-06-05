@@ -6,21 +6,17 @@ Created on Mon May 27 07:36:23 2019
 
 
 """
-Each snake has a NN with 24 input neurons, 2 x 18 hiddens neurons, 4 output neurons (direction)
-The Snake looks in 8 directions. In each directions it looks for : - distance to the food - 
-distance to its tail - distance to the wall
-
-Each generation contains a population of 2000 snakes.
-For every generation some of the best snakes are selected to reproduce.
-
-Affichage de la génération, de la meilleure fitness, du taux de mutation, du score, du meilleur score, du réseau de neurones
-We stop a snake as soon as he cross the number of move to the left we decided and we reset this number wwhen
-the snake take a point.
-The snake cannot hit the wall.
-
-
+TO-DO LIST
 
 Regarder dans les 4 coins et passer a une couche d'entree à 24 sinapses
+
+Automatiser le calcul des generations, permettre l'arret
+ et le redemarrage la ou l'on s'est arrete
+
+
+Essayer de refaire l'affichage d'une generation pas à pas en voyant les 
+deplacements 
+
 
 Tester de remettre la sigmoide
 
@@ -42,7 +38,7 @@ global taille_grille, width_zone, height_zone, len_gen, nb_jeu,directions
 taille_grille = 20
 width_zone = 810
 height_zone = 610
-len_gen = 50
+len_gen = 500
 nb_jeu = 200
 directions = ["left","down","right","up"]
 # --------------------------------------------------------
@@ -398,11 +394,12 @@ class Snake:
             #si le serpent a attrapé la souris
             if self.__coordonnees[0:2] == self.__souris:
                 self.__score += 1
+                self.__nb_jeu = nb_jeu
                 self.__souris = [np.random.randint(0,(width_zone-10)//taille_grille-1),np.random.randint(0,(height_zone-10)//taille_grille-1)]
                 self.__liste_souris.append(self.__souris)
         else:
-            print("Serpent out : ",self.__parcours)
-            print("nb_jeu :",nb_jeu-self.__nb_jeu)
+            #print("Serpent out : ",self.__parcours)
+            #print("nb_jeu :",nb_jeu-self.__nb_jeu)
             self.__can_play = 0
         self.__fitness = self.comput_fitness()
         #print("Current fitness : ",self.__fitness)
