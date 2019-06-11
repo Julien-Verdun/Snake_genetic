@@ -3,11 +3,11 @@
 Snake trained with genetic algorithme and NN
 
 
-Each snake has a NN with 24 input neurons, two hidden layers with 18 neurons and 4 output neurons (for the 4 directions).
+Each snake has a NN with 24 input neurons (comput according to the environment), two hidden layers with 18 neurons and 4 output neurons (for the 4 directions).
 
 The Snake looks in 8 directions. In each direction, it looks for : 
 
-- distance to the food 
+- distance to the food (mice)
 - distance to its tail 
 - distance to the wall
 
@@ -19,3 +19,21 @@ We stop a snake as soon as he cross the number of move we decided and we reset t
 The snake cannot hit the wall.
 
 We display the generation number, the best fitness, the best score and the neural network for the best snake.
+
+
+
+-----------------------
+
+
+On entraîne le réseau de neurone d'un serpent avec un algorithme génétique de la manière suivante.
+
+Chaque serpent possède un réseau de neurones dont la couche d'entrée possède 24 neurones (analyse de l'environnement), les deux couches cachées en possèdent 18 et la couche de sortie en possède 4.
+Avant de se déplacer le serpent regarde dans 8 directions (4 côtés et 4 coins). Il regarde : 
+
+- la distance à la nourriture (souris)
+- la distance à sa queue 
+- la distance au mur
+
+Chaque génération contient une population de 2000 serpents.
+A chaque génération ...
+
