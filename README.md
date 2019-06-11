@@ -34,6 +34,13 @@ Avant de se déplacer le serpent regarde dans 8 directions (4 côtés et 4 coins
 - la distance à sa queue 
 - la distance au mur
 
+Chaque génération contient 2000 serpents.
+A chaque génération, une partie des serpents mutent (les 30% ayant la meilleure fitness), une partie des serpents subissent des croissements (les 40% suivants) et les autres (30 dernier %) sont renouvellés (sélection naturelle).
+
+On arrête un serpent dès qu'il déplace le nombre de mouvements autorisés et on réinitialise ce nombre quand le serpent mange une souris. Le serpent n'a pas le droit de rentrer dans un mur.
+
+On affiche la génération, la meilleure fitness, le meilleur score et le réseau neuronal du meilleur serpent.
+
 Chaque génération contient une population de 2000 serpents.
 A chaque génération ...
 
