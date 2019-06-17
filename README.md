@@ -45,3 +45,9 @@ On affiche la génération, la meilleure fitness, le meilleur score et le résea
 Chaque génération contient une population de 2000 serpents.
 A chaque génération ...
 
+
+------------
+
+## Demonstration of the graphical interface
+
+![demo_snake_genetique](demo_snake_genetic.PNG)
