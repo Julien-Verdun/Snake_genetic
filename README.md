@@ -1,6 +1,7 @@
 # Snake_genetic
 
-Snake trained with genetic algorithme and NN
+Snake trained with genetic algorithme and NN.
+This project is inspired of this [Youtube video](https://www.youtube.com/watch?v=zIkBYwdkuTk&t=89s).
 
 
 Each snake has a NN with 24 input neurons (comput according to the environment), two hidden layers with 18 neurons and 4 output neurons (for the 4 directions).
