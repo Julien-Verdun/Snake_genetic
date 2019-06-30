@@ -5,21 +5,33 @@ This file contains properties and methods of snake class.
 """
 
 import random
+import json
 import numpy as np
 global mutation_rate, nb_jeu, taille_grille, width_zone, height_zone,scale,len_gen,directions
 
 
-len_gen = 2000
-directions = ["left","down","right","up"]
-scale = 1
-nb_jeu = 200
-mutation_rate = 0.05
-taille_grille = 16
-width_zone = 410#810
-height_zone = 410#610
+def extract_parameters(file_name):
+    with open(file_name,"r") as read_file:
+        data = json.load(read_file)
 
-Lx = width_zone//taille_grille#25
-Ly = height_zone//taille_grille#25
+        len_gen = int(data['len_gen'])
+        directions = data['directions']
+        scale = int(data['scale'])
+        nb_jeu = int(data['nb_jeu'])
+        mutation_rate = int(data['mutation_rate'])
+        taille_grille = int(data['taille_grille'])
+        width_zone = int(data['width_zone'])
+        height_zone = int(data['height_zone'])
+
+    return len_gen,directions,scale,nb_jeu,mutation_rate,taille_grille,width_zone,height_zone
+
+len_gen,directions,scale,nb_jeu,mutation_rate,taille_grille,width_zone,height_zone = extract_parameters('project_parameters.json')
+
+print(extract_parameters('project_parameters.json'))
+
+
+Lx = width_zone//taille_grille
+Ly = height_zone//taille_grille
 
 
 def get(parametre):
@@ -94,6 +106,7 @@ class Snake:
         self.__score = score
         self.__fitness = 1
         self.__nb_jeu = nb_jeu
+        self.__nb_move = 0
         self.__len_snake = len_snake
         self.__dead_reason = " "
         Tx = np.random.randint(0,Lx)
@@ -118,12 +131,15 @@ class Snake:
         #inversement proportionnelle à la distance a la nourriture
         #penalisé si contacte avec un mur
         fitness = self.__fitness
+        fitness += self.__nb_move*10
         fitness += 100*self.__score**4
         fitness += (np.sqrt((self.__coordonnees[0] - self.__mouse[0]) ** 2 + (self.__coordonnees[1] - self.__mouse[1]) ** 2))
         if self.__coordonnees[0] < 2 or self.__coordonnees[0]>Lx-2 or self.__coordonnees[1] < 2 or self.__coordonnees[1]>Ly-2:
             fitness /= 100
         fitness += np.abs(nb_jeu - self.__nb_jeu)
         return fitness
+    def get_nb_move(self):
+        return self.__nb_move
     def get_fitness(self):
         return self.__fitness
     def get_dead_reason(self):
@@ -163,6 +179,7 @@ class Snake:
     def remise_a_zero(self):
         self.__score = 0
         self.__fitness = 1
+        self.__nb_move = 0
         x = np.random.randint(0, Lx)
         y = np.random.randint(0, Ly)
         self.__coordonnees = init_snake(x,y)
@@ -279,6 +296,7 @@ class Snake:
                 self.__nb_jeu = nb_jeu
                 self.__mouse = [np.random.randint(0,Lx),np.random.randint(0,Ly)]
                 self.__liste_mouse.append(self.__mouse)
+            self.__nb_move += 1
         else:
             self.__can_play = 0
         self.__fitness = self.comput_fitness()

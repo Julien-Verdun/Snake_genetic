@@ -1,0 +1,10 @@
+{
+	"len_gen" : 2000,
+	"directions" : ["left",	"down", "right", "up"],
+	"scale" : 1,
+	"nb_jeu" : 200,
+	"mutation_rate" : 0.05,
+	"taille_grille" : 16,
+	"width_zone" : 410,
+	"height_zone" : 410
+}

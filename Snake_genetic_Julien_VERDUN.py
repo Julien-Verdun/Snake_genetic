@@ -91,6 +91,11 @@ class FenPrincipale(Tk):
         self.__text_fitness.pack(side = TOP)
         self.__text_fitness.config(text = "Best fitness : {}".format(self.__fitness))
 
+        self.__nb_move = 0
+        self.__text_nb_move = Label(self)
+        self.__text_nb_move.pack(side=TOP)
+        self.__text_nb_move.config(text="Number of move : {}".format(self.__nb_move))
+
         self.__NN = Label(self,width=100,height = 5)
         self.__NN.pack(side = TOP)
         self.__NN.config(text = "Neural Network")
@@ -114,10 +119,9 @@ class FenPrincipale(Tk):
         self.focus_set()
         #self.bind("<Key>",self.next_generation)
         self.bind("<Key>",self.next_generation)
+
     def effacer(self):
         self.__zoneAffichage.delete(ALL)
-
-
 
     def affiche_best_snake_mouse(self,best_snake,color_snake,color_head,color_mouse):
         liste_coordonnees = best_snake.get_liste_coordonnees()
@@ -137,55 +141,10 @@ class FenPrincipale(Tk):
         for i in range(len(liste_mouse)):
             self.__mouse_display.append(self.__zoneAffichage.create_oval(10 + liste_mouse[i][0]*taille_grille,10 + liste_mouse[i][1]*taille_grille,10 + (liste_mouse[i][0]+1)*taille_grille,10 + (liste_mouse[i][1]+1)*taille_grille,fill=color_mouse,outline="yellow"))
         print("Best snake displayed, you can go to the next generation")
-    """
-    def affiche_best_snake_mouse_step_by_step(self,best_snake,color_snake,color_head,color_mouse):
-        liste_coordonnees = best_snake.get_liste_coordonnees()
-        print("Coordonnees of the best snake : {}".format(liste_coordonnees))
-        liste_mouse = best_snake.get_liste_mouse()
-        if self.__mouse_display != []:
-            for elt in self.__mouse_display:
-                self.__zoneAffichage.delete(elt)
-            self.__mouse_display = []
-        if self.__snake_display != []:
-            for elt in self.__snake_display:
-                self.__zoneAffichage.delete(elt)
-            self.__snake_display = []
 
-        self.__snake_display.append(self.__zoneAffichage.create_rectangle(10 + taille_grille * liste_coordonnees[0],10 + taille_grille * liste_coordonnees[1],10 + taille_grille * (liste_coordonnees[0] + 1),10 + taille_grille * (liste_coordonnees[1] + 1),fill=color_snake, outline="green"))
-        self.__snake_display.append(self.__zoneAffichage.create_rectangle(10 + taille_grille * liste_coordonnees[2],
-                                                                          10 + taille_grille * liste_coordonnees[3],
-                                                                          10 + taille_grille * (
-                                                                                      liste_coordonnees[2] + 1),
-                                                                          10 + taille_grille * (
-                                                                                      liste_coordonnees[3] + 1),
-                                                                          fill=color_snake, outline="green"))
-        self.__snake_display.append(self.__zoneAffichage.create_rectangle(10 + taille_grille * liste_coordonnees[4],
-                                                                          10 + taille_grille * liste_coordonnees[5],
-                                                                          10 + taille_grille * (
-                                                                                      liste_coordonnees[4] + 1),
-                                                                          10 + taille_grille * (
-                                                                                      liste_coordonnees[5] + 1),
-                                                                          fill=color_snake, outline="green"))
-        self.__snake_display.append(self.__zoneAffichage.create_rectangle(10 + taille_grille * liste_coordonnees[6],
-                                                                          10 + taille_grille * liste_coordonnees[7],
-                                                                          10 + taille_grille * (
-                                                                                      liste_coordonnees[6] + 1),
-                                                                          10 + taille_grille * (
-                                                                                      liste_coordonnees[7] + 1),fill=color_snake, outline="green"))
-        print(len(liste_coordonnees))
-        for i in range(8,len(liste_coordonnees)-7,2) :
-            self.__zoneAffichage.move(self.__snake_display[3], (liste_coordonnees[i] - liste_coordonnees[i-2])*taille_grille, (liste_coordonnees[i+1] - liste_coordonnees[i-1])*taille_grille)
-            self.__zoneAffichage.move(self.__snake_display[2], (liste_coordonnees[i-2] - liste_coordonnees[i-4])*taille_grille, (liste_coordonnees[i-1] - liste_coordonnees[i-3])*taille_grille)
-            self.__zoneAffichage.move(self.__snake_display[1], (liste_coordonnees[i-4] - liste_coordonnees[i-6])*taille_grille, (liste_coordonnees[i-3] - liste_coordonnees[i-5])*taille_grille)
-            self.__zoneAffichage.move(self.__snake_display[0], (liste_coordonnees[i-6] - liste_coordonnees[i-8])*taille_grille, (liste_coordonnees[i-5] - liste_coordonnees[i-7])*taille_grille)
-            print("Affichage du serpent, étape ",i)
-            #sleep(0.5)
-        for i in range(len(liste_mouse)):
-            self.__mouse_display.append(self.__zoneAffichage.create_oval(10 + liste_mouse[i][0]*taille_grille,10 + liste_mouse[i][1]*taille_grille,10 + (liste_mouse[i][0]+1)*taille_grille,10 + (liste_mouse[i][1]+1)*taille_grille,fill=color_mouse,outline="yellow"))
-        print("Best snake displayed, you can go to the next generation")
-    """
     def generer_snake(self):
         return clsnk.Snake(4,0)
+
     def new_generation(self,old_generation):
         liste_fitness = []
         for snake in old_generation :
@@ -231,6 +190,7 @@ class FenPrincipale(Tk):
         print("Best snake : ",best_snake.get_coordonnees())
         print("Best fitness : ",best_fitness)
         print("Best score :",best_snake.get_score())
+        print("Number of move :",best_snake.get_nb_move())
         print("Dead reason : ",best_snake.get_dead_reason())
         if best_snake == 0:
             print("Error fonction next generation")
@@ -244,13 +204,14 @@ class FenPrincipale(Tk):
         self.__text_score.config(text="Current score : {}".format(self.__score))
         self.__fitness = best_snake.get_fitness()
         self.__text_fitness.config(text = "Best fitness : {}".format(self.__fitness))
+        self.__nb_move = best_snake.get_nb_move()
+        self.__text_nb_move.config(text = "Number of move : {}".format(self.__nb_move))
         [input_layer,hidden_layer1,hidden_layer2,output_layer] = best_snake.get_NN()
         self.__NN.config(text = "Input layer : " + liste_to_txt(input_layer) + "\n" + "Hidden layer1 : " + liste_to_txt(hidden_layer1) + "\n" + "Hidden layer2 : " + liste_to_txt(hidden_layer2) + "\n" + "Output_layer : " + liste_to_txt(output_layer))
 
         #calcul de la prochaine generation
         self.__generation_snake = self.new_generation(self.__generation_snake)
         print("New population generated")
-
 
     def next_generation_n_step(self,n_step):
         for i in range(n_step): #mettre une variable globale ici
