@@ -27,8 +27,7 @@ def extract_parameters(file_name):
 
 len_gen,directions,scale,nb_jeu,mutation_rate,taille_grille,width_zone,height_zone = extract_parameters('project_parameters.json')
 
-print(extract_parameters('project_parameters.json'))
-
+print("Parameters of the game : ",extract_parameters('project_parameters.json'))
 
 Lx = width_zone//taille_grille
 Ly = height_zone//taille_grille
@@ -140,10 +139,16 @@ class Snake:
         return fitness
     def get_nb_move(self):
         return self.__nb_move
+    def get_len_snake(self):
+        return self.__len_snake
     def get_fitness(self):
         return self.__fitness
     def get_dead_reason(self):
         return self.__dead_reason
+    def get_mouse(self):
+        return self.__mouse
+    def get_liste_snake(self):
+        return self.__liste_mouse
     def get_NN(self):
         return [self.__input_layer,self.__hidden_layer1,self.__hidden_layer2,self.__output_layer]
     def get_layers(self):
@@ -351,3 +356,25 @@ class Snake:
             self.__dead_reason = "Snake eat its tail"
             return False
         return True
+
+
+
+class Register:
+    def __init__(self,best_snake_parameters_file_name):
+        self.__file_name = best_snake_parameters_file_name
+        data = self.read_parameters_best_snake()
+    def get_data(self):
+        data = self.read_parameters_best_snake()
+        return data
+
+    def read_parameters_best_snake(self):
+        with open(self.__file_name, "r",encoding='utf-8') as json_file:
+            data = json.load(json_file)
+        return data
+
+    def write_parameters_best_snake(self,new_data):
+        data = self.read_parameters_best_snake()
+        for i in range(0,len(new_data),2):
+            data[new_data[i]] = new_data[i+1]
+        with open(self.__file_name, "w") as json_file:
+            json.dump(data, json_file)

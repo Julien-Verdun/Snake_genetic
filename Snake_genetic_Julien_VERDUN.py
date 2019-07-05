@@ -11,6 +11,13 @@ TO-DO LIST
 Le NN ne semble pas converger du tout..
 Tester de remettre la sigmoide
 
+
+Faire une fonction qui permet de remplir le fichier best_snake_parameteres.json
+et la lancer avant de quitter la partie. 
+Mettre un bouton qui permet de recuperer les paramètres et initialiser son serpent
+avec les derniers paramètres enregistrer.
+Faire une fonction qui permet de creer une copie du fichier best_snake_parameters.jsn
+et mettre un bouton qui active cette fonction quand on veut
 """
 
 
@@ -71,7 +78,8 @@ class ZoneAffichage(Canvas):
 class FenPrincipale(Tk):
     def __init__(self):
         Tk.__init__(self)
-
+        self.__register = clsnk.Register("best_snake_parameters.json")
+        print("Parameters of the best snake : ",self.__register.get_data())
         self.__advices = Label(self)
         self.__advices.pack(side=TOP)
         self.__advices.config(text = "Press the button Up/Down/Left/Down to simulate one/five/ten/fifty generations")
@@ -96,21 +104,24 @@ class FenPrincipale(Tk):
         self.__text_nb_move.pack(side=TOP)
         self.__text_nb_move.config(text="Number of move : {}".format(self.__nb_move))
 
-        self.__NN = Label(self,width=100,height = 5)
-        self.__NN.pack(side = TOP)
-        self.__NN.config(text = "Neural Network")
+        self.__NN = 0
+        self.__NN_text = Label(self,width=100,height = 5)
+        self.__NN_text.pack(side = TOP)
+        self.__NN_text.config(text = "Neural Network")
+
+        # Defines the buttons
+        self.__boutonLoad = Button(self, text='Load', command=self.load_saved_snake).pack(side=LEFT, padx=5, pady=5)
+        self.__boutonExit = Button(self, text='Exit', command=self.exit).pack(side=LEFT, padx=5, pady=5)
+        self.__boutonSaveandexit = Button(self, text='Save and exit', command=self.save_and_exit).pack(side=LEFT, padx=5, pady=5)
+        self.__bouttonSave = Button(self, text='Save', command=self.save_best_snake).pack(side=LEFT, padx=5, pady=5)
 
         self.title('SNAKE - GENETIQUE')
         self.__zoneAffichage = ZoneAffichage(self)
         self.__zoneAffichage.pack(padx = 5,pady=5)
 
-        self.__best_snake = []
+        self.__best_snake = 0
         self.__generation_snake = [self.generer_snake() for i in range(len_gen)]
 
-        # Création d'un widget Button (bouton Effacer)
-        self.__boutonEffacer = Button(self, text='Effacer', command=self.effacer).pack(side=LEFT, padx=5, pady=5)
-        # Création d'un widget Button (bouton Quitter)
-        self.__boutonQuitter = Button(self, text='Quitter', command=self.destroy).pack(side=LEFT, padx=5, pady=5)
         self.__mouse_display = []
         self.__snake_display = []
 
@@ -119,10 +130,11 @@ class FenPrincipale(Tk):
         self.focus_set()
         #self.bind("<Key>",self.next_generation)
         self.bind("<Key>",self.next_generation)
-
-    def effacer(self):
-        self.__zoneAffichage.delete(ALL)
-
+    def exit(self):
+        self.destroy()
+    def save_and_exit(self):
+        self.save_best_snake()
+        self.destroy()
     def affiche_best_snake_mouse(self,best_snake,color_snake,color_head,color_mouse):
         liste_coordonnees = best_snake.get_liste_coordonnees()
         print("Coordonnees of the best snake : {}".format(liste_coordonnees))
@@ -195,7 +207,7 @@ class FenPrincipale(Tk):
         if best_snake == 0:
             print("Error fonction next generation")
             best_snake = self.__generation_snake[0] # pas ouf
-
+        self.__best_snake = best_snake
         #affichage du seprent et mise à jour des textes
         self.affiche_best_snake_mouse(best_snake,"pink","magenta","red")
         self.__generation += 1
@@ -207,7 +219,7 @@ class FenPrincipale(Tk):
         self.__nb_move = best_snake.get_nb_move()
         self.__text_nb_move.config(text = "Number of move : {}".format(self.__nb_move))
         [input_layer,hidden_layer1,hidden_layer2,output_layer] = best_snake.get_NN()
-        self.__NN.config(text = "Input layer : " + liste_to_txt(input_layer) + "\n" + "Hidden layer1 : " + liste_to_txt(hidden_layer1) + "\n" + "Hidden layer2 : " + liste_to_txt(hidden_layer2) + "\n" + "Output_layer : " + liste_to_txt(output_layer))
+        self.__NN_text.config(text = "Input layer : " + liste_to_txt(input_layer) + "\n" + "Hidden layer1 : " + liste_to_txt(hidden_layer1) + "\n" + "Hidden layer2 : " + liste_to_txt(hidden_layer2) + "\n" + "Output_layer : " + liste_to_txt(output_layer))
 
         #calcul de la prochaine generation
         self.__generation_snake = self.new_generation(self.__generation_snake)
@@ -240,18 +252,50 @@ class FenPrincipale(Tk):
             self.__generation_snake = self.new_generation(self.__generation_snake)
 
         self.affiche_best_snake_mouse(best_snake, "pink","magenta","cyan")
-        self.__text_generation.config(text="Generation : {}".format(self.__generation))
         self.__score = best_snake.get_score()
-        self.__text_score.config(text="Current score : {}".format(self.__score))
         self.__fitness = best_snake.get_fitness()
-        self.__text_fitness.config(text="Best fitness : {}".format(self.__fitness))
         [input_layer, hidden_layer1, hidden_layer2, output_layer] = best_snake.get_NN()
-        self.__NN.config(text="Input layer : " + liste_to_txt(input_layer) + "\n" + "Hidden layer1 : " + liste_to_txt(
-            hidden_layer1) + "\n" + "Hidden layer2 : " + liste_to_txt(
-            hidden_layer2) + "\n" + "Output_layer : " + liste_to_txt(output_layer))
+        self.update_displaid_parameter()
 
+    def save_best_snake(self):
+        best_snake = self.__best_snake
+        if type(best_snake) != int:
+            data = ["score",best_snake.get_score(),"fitness",best_snake.get_fitness(),"nb_jeu",best_snake.get_nb_move()]
+            data += ["nb_move",best_snake.get_nb_move(),"len_snake",best_snake.get_len_snake()]
+            data += ["dead_reason",best_snake.get_dead_reason(),"coordonnees",best_snake.get_coordonnees()]
+            data += ["can_play",best_snake.get_can_play(),"mouse",best_snake.get_mouse(),"liste_mouse",best_snake.get_liste_snake()]
+            [input_layer, hidden_layer1, hidden_layer2, output_layer] = best_snake.get_NN()
+            data += ["generation",self.__generation,"input_layer", input_layer.tolist(),"hidden_layer1",hidden_layer1.tolist()]
+            data += ["hidden_layer2",hidden_layer2.tolist(),"output_layer",output_layer.tolist()]
+            self.__register.write_parameters_best_snake(data)
+            print("Parameters of the best snake saved")
+        else:
+            print("No best snake existing sorry !")
+    def load_saved_snake(self):
+        # changer tout les paramètres en les paramètres de data
+        data = self.__register.get_data()
+        self.__score = data["score"]
+        self.__fitness = data["fitness"]
+        self.__nb_jeu = data["nb_jeu"]
+        self.__nb_move = data["nb_move"]
+        self.__len_snake = data["len_snake"]
+        self.__dead_reason = data["dead_reason"]
+        self.__coordonnees = data["coordonnees"]
+        self.__can_play = data["can_play"]
+        self.__mouse = data["mouse"]
+        self.__liste_mouse = data["liste_mouse"]
+        self.__generation = data["generation"]
+        self.__NN = [np.array(data["input_layer"]), np.array(data["hidden_layer1"]), np.array(data["hidden_layer2"]), np.array(data["output_layer"])]
+        self.update_displaid_parameter()
+        print("Parameters of the best snake loaded")
 
-
+    def update_displaid_parameter(self):
+        self.__text_generation.config(text="Generation : {}".format(self.__generation))
+        self.__text_score.config(text="Current score : {}".format(self.__score))
+        self.__text_fitness.config(text="Best fitness : {}".format(self.__fitness))
+        self.__text_nb_move.config(text="Number of move : {}".format(self.__nb_move))
+        [input_layer, hidden_layer1, hidden_layer2, output_layer] = self.__NN
+        self.__NN_text.config(text = "Input layer : " + liste_to_txt(input_layer) + "\n" + "Hidden layer1 : " + liste_to_txt(hidden_layer1) + "\n" + "Hidden layer2 : " + liste_to_txt(hidden_layer2) + "\n" + "Output_layer : " + liste_to_txt(output_layer))
 # --------------------------------------------------------
 if __name__ == "__main__":
     fen = FenPrincipale()
